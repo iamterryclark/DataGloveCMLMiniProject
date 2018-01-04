@@ -30,7 +30,6 @@ grainSynth(_grainSynth)
     mlGui->addToggle("Record Voice");
     mlGui->addToggle("Set Playhead");
     mlGui->addToggle("Manipulate Synth");
-    mlGui->addToggle("Exit Mode");
     mlGui->addButton("Gesture Train");
     mlGui->addToggle("Gesture Run");
     mlGui->addBreak()->setHeight(10.0f);
