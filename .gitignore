@@ -3,4 +3,4 @@ Makefile
 Project.xcconfig
 config.make
 openFrameworks-Info.plist
-*.xcodeprojx
+DataGloveMiniProjectKNN.xcodeproj
