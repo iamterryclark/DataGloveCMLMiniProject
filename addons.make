@@ -1,0 +1,7 @@
+ofxDatGui
+ofxDspChain
+ofxMaxim
+ofxOsc
+ofxRapid
+ofxSimpleSerial
+ofxSndFile
