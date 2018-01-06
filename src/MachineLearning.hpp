@@ -38,9 +38,9 @@ public:
     vector<trainingExample> trainingSetReg;
     trainingExample tempExample;
     regression myReg;
-    bool trained, bRunRegression, bTrainRegression;
     string mlStatus = "";
     
-    bool bTrainGestures, bCaptureGesture;
-    bool bRunGestures, bRegression;
+    bool bCaptureRegression, bCaptureGesture;
+    bool bTrainRegression, bTrainGestures;
+    bool bRunRegression,  bRunGestures;
 };

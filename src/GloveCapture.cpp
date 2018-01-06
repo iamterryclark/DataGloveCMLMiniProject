@@ -9,10 +9,10 @@
 
 GloveCapture::GloveCapture(){
     //Serial Setup for accessing glove data
-    serial.listDevices();
-    serial.setup(0, 9600);
-    serial.startContinuousRead();
-    ofAddListener(serial.NEW_MESSAGE,this,&GloveCapture::onNewMessage);
+//    serial.listDevices();
+//    serial.setup(0, 9600);
+//    serial.startContinuousRead();
+//    ofAddListener(serial.NEW_MESSAGE,this,&GloveCapture::onNewMessage);
     
     message = "";
     
@@ -22,10 +22,11 @@ GloveCapture::GloveCapture(){
     
     gloveGui->setPosition(0,0);
     gloveGui->addHeader("Glove Params");
-    gloveGui->addButton("Calibrate");
+    gloveGui->addToggle("Calibrate");
     gloveGui->addButton("Preset Calibration");
 
     //Setup GloveGui Events
+    gloveGui->onToggleEvent(this, &GloveCapture::onToggleEvent);
     gloveGui->onButtonEvent(this, &GloveCapture::onButtonEvent);
 
     //Glove Params
@@ -58,8 +59,9 @@ void GloveCapture::calibrate(float _vals[7]){
             minVals.at(i) = _vals[i];
         }
     }
-    bCalibrateGlove = false;
 }
+
+//--------------------------------------------------------------
 
 //I used a preset calibration as the glove itself is fault, when I tap my hand to hard it will glitch and the finger reading will be incorrect
 void GloveCapture::usePresetCalibration(){
@@ -77,7 +79,7 @@ void GloveCapture::usePresetCalibration(){
 
 void GloveCapture::update(){
     if(ofGetFrameNum() % SENDMSG == 0){
-        serial.sendRequest();//This will send a request to serial every 5 frames
+        //serial.sendRequest();//This will send a request to serial every 5 frames
         
         //Capture all raw glove values
         for (int i = 0; i < FEATURES; i++){
@@ -109,6 +111,8 @@ void GloveCapture::update(){
         
     }
 }
+
+//--------------------------------------------------------------
 
 double GloveCapture::rms(double _value){
     double rmsVal = 0.0;
@@ -147,14 +151,13 @@ vector<double> GloveCapture::getData(){
     }
     return data;
 }
-
 //--------------------------------------------------------------
 
-void GloveCapture::onButtonEvent(ofxDatGuiButtonEvent e){
+void GloveCapture::onToggleEvent(ofxDatGuiToggleEvent e){
     string guiLabel = e.target->getLabel();
     
     if (guiLabel == "Calibrate") {
-        bCalibrateGlove = e.target->getEnabled();
+        bCalibrateGlove = e.target->getChecked();
         
         if (bCalibrateGlove){
             for(int i = 0; i <FEATURES; i++){
@@ -163,10 +166,17 @@ void GloveCapture::onButtonEvent(ofxDatGuiButtonEvent e){
             }
         }
     }
+}
+
+//--------------------------------------------------------------
+
+void GloveCapture::onButtonEvent(ofxDatGuiButtonEvent e){
+    string guiLabel = e.target->getLabel();
     
     if (guiLabel == "Preset Calibration")
         bPresetCalibration = e.target->getEnabled();
 }
+
 //--------------------------------------------------------------
 
 void GloveCapture::onNewMessage(string & message)

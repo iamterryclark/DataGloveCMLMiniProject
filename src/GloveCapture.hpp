@@ -18,6 +18,7 @@
 class GloveCapture{
 private:
     void onNewMessage(string & message);
+    void onToggleEvent(ofxDatGuiToggleEvent e);
     void onButtonEvent(ofxDatGuiButtonEvent e);
     
     //Serial Setup

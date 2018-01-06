@@ -59,6 +59,8 @@ void GrainSynthesis::setup(int _sampleRate, int _bufferSize)
     grainGui->onSliderEvent(this, &GrainSynthesis::onSliderEvent);
 }
 
+//--------------------------------------------------------------
+
 void GrainSynthesis::updatePlayhead(){
     if(!setPHPosition) {
         if(updatePlayheadEvent){
@@ -70,11 +72,15 @@ void GrainSynthesis::updatePlayhead(){
     }
 }
 
+//--------------------------------------------------------------
+
 void GrainSynthesis::audioReceived(float * input, int bufferSize, int nChannels){
     for (unsigned i = 0; i < bufferSize; i++) {
         sample.loopRecord(input[i*nChannels], recLiveInput, recMix);
     }
 }
+
+//--------------------------------------------------------------
 
 void GrainSynthesis::audioRequested(float * output, int bufferSize, int nChannels){
     for (unsigned i = 0; i < bufferSize; i++){
@@ -101,6 +107,8 @@ void GrainSynthesis::audioRequested(float * output, int bufferSize, int nChannel
         }
     }
 }
+
+//--------------------------------------------------------------
 
 void GrainSynthesis::draw(){
     ofBackground(0);
@@ -148,6 +156,7 @@ void GrainSynthesis::draw(){
 }
 
 //--------------------------------------------------------------
+
 void GrainSynthesis::onSliderEvent(ofxDatGuiSliderEvent e){
     string guiLabel = e.target->getLabel();
     if(guiLabel == "Grain Rate"){
@@ -166,6 +175,7 @@ void GrainSynthesis::onSliderEvent(ofxDatGuiSliderEvent e){
 }
 
 //--------------------------------------------------------------
+
 void GrainSynthesis::onToggleEvent(ofxDatGuiToggleEvent e){
     string guiLabel = e.target->getLabel();
     

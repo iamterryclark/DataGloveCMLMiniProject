@@ -21,8 +21,7 @@ grainSynth(_grainSynth)
     
     /*Gestures for: 1) Record,
                     2) Set Playhead,
-                    3) Manipulate Granular Synth,
-                    4) Exit from mode
+                    3) Manipulate Granular Synth
     */
     
     mlGui->addLabel(" :: Gesture Recognition :: ");
@@ -30,13 +29,9 @@ grainSynth(_grainSynth)
     mlGui->addToggle("Record Voice");
     mlGui->addToggle("Set Playhead");
     mlGui->addToggle("Manipulate Synth");
-    mlGui->addButton("Gesture Train");
-    mlGui->addToggle("Gesture Run");
     mlGui->addBreak()->setHeight(10.0f);
     mlGui->addLabel(" :: Regression :: ");
-    mlGui->addToggle("Regression Record");
-    mlGui->addButton("Regression Train");
-    mlGui->addToggle("Regression Run");
+    mlGui->addToggle("Regression");
     mlGui->addBreak()->setHeight(10.0f);
     mlGui->addLabel(" :: Clear Out :: ");
     mlGui->addButton("Clear All");
@@ -46,14 +41,12 @@ grainSynth(_grainSynth)
     mlGui->onToggleEvent(this, &MachineLearning::onToggleEvent);
     
     //Machine Learning Params
-    bCaptureGesture = false;
-    bTrainGestures = false;
-    bRunGestures = false;
-    trained = false;
-    bRunRegression = false;
-    bRegression = false;
-    bTrainRegression = false;
+    bCaptureGesture = bCaptureRegression =
+    bTrainGestures = bTrainRegression =
+    bRunGestures = bRunRegression = false;
 }
+
+//--------------------------------------------------------------
 
 void MachineLearning::update(){
     
@@ -74,10 +67,11 @@ void MachineLearning::update(){
                                   gloveData[5], gloveData[6] };
             tempExample.output = { (double)gestureNum };
             trainingSet.push_back(tempExample);
+            bRunGestures = false;
         }
         
         //If we want to record regression
-        if (bRegression){
+        if (bCaptureRegression){
             tempExample.input = { gloveData[0], gloveData[1], gloveData[2] };
             tempExample.output = {
                 grainSynth->grainGui->getSlider("Grain Rate")->getValue(),
@@ -86,6 +80,7 @@ void MachineLearning::update(){
                 grainSynth->grainGui->getSlider("Grain Overlaps")->getValue()
             };
             trainingSetReg.push_back(tempExample);
+            bRunGestures = false;
         }
 
 //
@@ -94,8 +89,9 @@ void MachineLearning::update(){
         if (bTrainGestures) {
             if(trainingSet.size() > 0) {
                 knn.train(trainingSet);
-                cout << "Gestues Trained" << endl;
+                cout << "Gesture Number " + ofToString(gestureNum) + " Trained" << endl;
                 bTrainGestures = false;
+                bRunGestures = true;
             } else {
                 cout << "Gestures Not Trained" << endl;
             }
@@ -107,6 +103,7 @@ void MachineLearning::update(){
                 myReg.train(trainingSetReg);
                 cout << "Regression Trained " << endl;
                 bTrainRegression = false;
+                bRunGestures = true;
             } else {
                 cout << "Regression Not Trained" << endl;
             }
@@ -171,6 +168,8 @@ void MachineLearning::update(){
     }
 }
 
+//--------------------------------------------------------------
+
 void MachineLearning::grainSynthReset(){
     grainSynth->recLiveInput = false;
     grainSynth->setPHPosition = false;
@@ -178,15 +177,19 @@ void MachineLearning::grainSynthReset(){
     grainSynth->grainGui->getToggle("Set Playhead Position")->setChecked(false);
 }
 
+//--------------------------------------------------------------
+
 void MachineLearning::draw(int x, int y){
     ofDrawBitmapString("Training Set Gestures : " + ofToString(trainingSet.size()), x, y + 20);
     ofDrawBitmapString("Training Set Reg : " + ofToString(trainingSetReg.size()), x,  y + 40);
     ofDrawBitmapString("Running ML : " + ofToString(bool(bRunGestures)), x, y + 60);
     ofDrawBitmapString("Capture Gesture : " + ofToString(bool(bCaptureGesture)), x, y + 80);
-    ofDrawBitmapString("Capture Regression : " + ofToString(bool(bCaptureGesture)), x, y + 100);
+    ofDrawBitmapString("Capture Regression : " + ofToString(bool(bCaptureRegression)), x, y + 100);
     ofDrawBitmapString("ML Status : " + mlStatus, x, y + 120);
     ofDrawBitmapString("Gesture Class Result : " + ofToString(classLabel), x, y + 140);
 }
+
+//--------------------------------------------------------------
 
 void MachineLearning::onToggleEvent(ofxDatGuiToggleEvent e){
     string guiLabel = e.target->getLabel();
@@ -196,23 +199,27 @@ void MachineLearning::onToggleEvent(ofxDatGuiToggleEvent e){
     if (guiLabel == "Static Hand"){
         gestureNum = 0;
         bCaptureGesture = e.target->getChecked();
+        if (!bCaptureGesture) bTrainGestures = true;
     } else if (guiLabel == "Record Voice"){
         gestureNum = 1;
         bCaptureGesture = e.target->getChecked();
+        if (!bCaptureGesture) bTrainGestures = true;
     } else if( guiLabel == "Set Playhead"){
         gestureNum = 2;
         bCaptureGesture = e.target->getChecked();
+        if (!bCaptureGesture) bTrainGestures = true;
     } else if( guiLabel == "Manipulate Synth"){
         gestureNum = 3;
         bCaptureGesture = e.target->getChecked();
-    } else if (guiLabel == "Gesture Run") {
-        bRunGestures = e.target->getChecked();
-    } else if (guiLabel == "Regression Record"){
-        bRegression = e.target->getChecked();
-    } else if (guiLabel == "Regression Run"){
-        bRunRegression = e.target->getChecked();
+        if (!bCaptureGesture) bTrainGestures = true;
+    } else if (guiLabel == "Regression"){
+        bCaptureRegression = e.target->getChecked();
+        if(!bCaptureRegression) bTrainRegression = true;
     }
+    
 }
+
+//--------------------------------------------------------------
 
 void MachineLearning::onButtonEvent(ofxDatGuiButtonEvent e){
     string guiLabel = e.target->getLabel();
