@@ -80,7 +80,7 @@ void MachineLearning::update(){
                 grainSynth->grainGui->getSlider("Grain Overlaps")->getValue()
             };
             trainingSetReg.push_back(tempExample);
-            bRunGestures = false;
+            bRunRegression = false;
         }
 
 //
@@ -103,7 +103,7 @@ void MachineLearning::update(){
                 myReg.train(trainingSetReg);
                 cout << "Regression Trained " << endl;
                 bTrainRegression = false;
-                bRunGestures = true;
+                bRunRegression = true;
             } else {
                 cout << "Regression Not Trained" << endl;
             }
@@ -147,7 +147,6 @@ void MachineLearning::update(){
                     grainSynthReset();
                     
                     if (bRunRegression){
-                        
                         output = myReg.run({ gloveData[0], gloveData[1], gloveData[2] });
                         
                         //For Visual Purposes
@@ -161,6 +160,7 @@ void MachineLearning::update(){
                         grainSynth->grainLength = output[1];
                         grainSynth->grainSpeed = output[2];
                         grainSynth->grainOverlaps = output[3];
+                        
                     }
                     break;
             }

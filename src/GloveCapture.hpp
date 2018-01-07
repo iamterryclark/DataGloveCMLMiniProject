@@ -1,4 +1,4 @@
-//
+
 //  GloveCapture.hpp
 //  DataGloveMiniProject
 //

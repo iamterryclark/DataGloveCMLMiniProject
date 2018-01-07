@@ -9,10 +9,10 @@
 
 GloveCapture::GloveCapture(){
     //Serial Setup for accessing glove data
-//    serial.listDevices();
-//    serial.setup(0, 9600);
-//    serial.startContinuousRead();
-//    ofAddListener(serial.NEW_MESSAGE,this,&GloveCapture::onNewMessage);
+    serial.listDevices();
+    serial.setup(0, 9600);
+    serial.startContinuousRead();
+    ofAddListener(serial.NEW_MESSAGE,this,&GloveCapture::onNewMessage);
     
     message = "";
     
@@ -70,7 +70,7 @@ void GloveCapture::usePresetCalibration(){
     minVals[2] = -14;  maxVals[2] = 14;
     minVals[3] = 639; maxVals[3] = 800;
     minVals[4] = 765; maxVals[4] = 800;
-    minVals[5] = 60;  maxVals[5] = 120;
+    minVals[5] = 60;  maxVals[5] = 170;
     minVals[6] = 710; maxVals[6] = 750;
     bPresetCalibration = false;
 }
@@ -79,7 +79,7 @@ void GloveCapture::usePresetCalibration(){
 
 void GloveCapture::update(){
     if(ofGetFrameNum() % SENDMSG == 0){
-        //serial.sendRequest();//This will send a request to serial every 5 frames
+        serial.sendRequest();//This will send a request to serial every 5 frames
         
         //Capture all raw glove values
         for (int i = 0; i < FEATURES; i++){
